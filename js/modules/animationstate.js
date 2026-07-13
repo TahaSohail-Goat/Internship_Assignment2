@@ -1,58 +1,48 @@
 /**
- * Nova Audio — Hero Section
- * This file will grow across the following branches:
- *   feat/idle-animation     -> continuous rotation, float, camera orbit
- *   feat/load-animation     -> page-load intro sequence
- *   feat/mouse-parallax     -> cursor-driven tilt and camera parallax
- *   feat/scroll-animation   -> ScrollTrigger-driven scroll sequence
- *   fix/mobile-performance  -> responsive/perf fixes
+ * Shared animation state for the hero scene.
+ *
+ * Idle motion writes a base pose here, mouse parallax adds offsets, scroll
+ * adds a third layer of offsets, and the render loop applies the composed
+ * result once per frame via applyAnimationState().
  */
-
-import * as THREE from "three";
-import { initScene } from "./modules/scene.js";
-import { createIdleAnimation } from "./modules/idleAnimation.js";
-import { playLoadAnimation } from "./modules/loadAnimation.js";
-import { createAnimationState, applyAnimationState } from "./modules/animationState.js";
-import { createMouseParallax } from "./modules/mouseParallax.js";
-
-const canvas = document.getElementById("hero-canvas");
-const { scene, camera, renderer, product } = initScene(canvas);
-
-// Shared coordinator: idle and mouse-parallax both write into this instead
-// of assigning to product.rotation / camera.position directly, so they
-// never fight over the same properties. See CONTINUATION_BRIEF.md section 6.
-const animationState = createAnimationState();
-const idleAnimation = createIdleAnimation(product, camera, animationState);
-const mouseParallax = createMouseParallax(canvas, animationState);
-
-// Clock starts only once the load animation completes, so idle/parallax
-// (which compose rotation/position every frame via applyAnimationState)
-// never fight the GSAP intro tween for control of the same properties.
-const clock = new THREE.Clock(false);
-let introComplete = false;
-
-function animate() {
-  requestAnimationFrame(animate);
-
-  if (introComplete) {
-    idleAnimation.update(clock.getElapsedTime());
-    mouseParallax.update();
-    applyAnimationState(animationState, product, camera);
-  }
-
-  renderer.render(scene, camera);
+export function createAnimationState() {
+  return {
+    base: {
+      rotationY: 0,
+      positionY: 0,
+      cameraX: 0,
+      cameraY: 0.4,
+      cameraZ: 6,
+    },
+    parallaxOffset: {
+      rotationX: 0,
+      rotationY: 0,
+      cameraX: 0,
+      cameraY: 0,
+    },
+    // Written by scrollanimation.js via a GSAP ScrollTrigger scrub tween.
+    // Kept separate from parallaxOffset so scroll and cursor motion never
+    // assign the same property.
+    scrollOffset: {
+      rotationY: 0,
+      positionY: 0,
+      cameraZ: 0,
+      productScale: 1,
+    },
+  };
 }
 
-animate();
+export function applyAnimationState(state, product, camera) {
+  product.rotation.x = state.parallaxOffset.rotationX;
+  product.rotation.y =
+    state.base.rotationY + state.parallaxOffset.rotationY + state.scrollOffset.rotationY;
+  product.position.y = state.base.positionY + state.scrollOffset.positionY;
+  product.scale.setScalar(state.scrollOffset.productScale);
 
-playLoadAnimation({
-  product,
-  overlayEl: document.getElementById("hero-overlay"),
-  titleEl: document.getElementById("hero-title"),
-  taglineEl: document.getElementById("hero-tagline"),
-  actionsEl: document.getElementById("hero-actions"),
-  onComplete: () => {
-    introComplete = true;
-    clock.start();
-  },
-});
+  camera.position.set(
+    state.base.cameraX + state.parallaxOffset.cameraX,
+    state.base.cameraY + state.parallaxOffset.cameraY,
+    state.base.cameraZ + state.scrollOffset.cameraZ
+  );
+  camera.lookAt(0, 0, 0);
+}
