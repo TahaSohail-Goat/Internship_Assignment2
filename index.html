@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nova Audio — Hear Everything</title>
+  <meta name="description" content="Nova Audio. Precision sound, precision design." />
+
+  <!-- Inter as the cross-platform SF Pro substitute, per apple.md -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <nav class="global-nav">
+    <span class="global-nav__logo">Nova Audio</span>
+    <ul class="global-nav__links">
+      <li><a href="#">Overview</a></li>
+      <li><a href="#">Tech Specs</a></li>
+      <li><a href="#">Buy</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero" id="hero">
+    <canvas class="hero__canvas" id="hero-canvas" aria-hidden="true"></canvas>
+
+    <div class="hero__content">
+      <h1 class="hero__title" id="hero-title">Nova One</h1>
+      <p class="hero__tagline" id="hero-tagline">Hear everything. Feel nothing else.</p>
+      <div class="hero__actions" id="hero-actions">
+        <a href="#" class="btn btn--secondary">Learn More</a>
+        <a href="#" class="btn btn--primary">Buy</a>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="js/script.js"></script>
+</body>
+</html>
