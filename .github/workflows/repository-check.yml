@@ -1,0 +1,41 @@
+name: Repository Quality Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-repository:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify required files exist
+        shell: bash
+        run: |
+          test -f README.md
+          test -f .gitignore
+          test -f CONTRIBUTING.md
+          test -f CHANGELOG.md
+          test -f index.html
+          test -f css/styles.css
+          test -f js/script.js
+          echo "All required files present."
+
+      - name: Show latest commits
+        run: git log --oneline -5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate HTML structure
+        run: |
+          npx --yes html-validate index.html || echo "HTML validation warnings above (non-blocking for now)."
