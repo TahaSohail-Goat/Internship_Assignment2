@@ -1,0 +1,261 @@
+/* ==========================================================================
+   Design tokens — sourced from apple.md (single source of truth)
+   ========================================================================== */
+:root {
+  /* Colors */
+  --color-primary: #0066cc;
+  --color-primary-focus: #0071e3;
+  --color-primary-on-dark: #2997ff;
+  --color-ink: #1d1d1f;
+  --color-on-dark: #ffffff;
+  --color-on-primary: #ffffff;
+  --color-canvas: #ffffff;
+  --color-canvas-parchment: #f5f5f7;
+  --color-surface-black: #000000;
+
+  /* Typography */
+  --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+  --font-text: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+
+  --fs-hero-display: 56px;
+  --fs-display-lg: 40px;
+  --fs-tagline: 21px;
+  --fs-body: 17px;
+  --fs-button-large: 18px;
+  --fs-nav-link: 12px;
+
+  /* Radii */
+  --radius-pill: 9999px;
+
+  /* Spacing */
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 17px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --space-section: 80px;
+
+  /* Elevation — reserved ONLY for product imagery, per apple.md */
+  --shadow-product: rgba(0, 0, 0, 0.22) 3px 5px 30px 0;
+
+  /* Motion */
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-text);
+  font-size: var(--fs-body);
+  line-height: 1.47;
+  letter-spacing: -0.374px;
+  color: var(--color-ink);
+  background: var(--color-canvas);
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ==========================================================================
+   Global nav — {component.global-nav}
+   ========================================================================== */
+.global-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 44px;
+  background: var(--color-surface-black);
+  color: var(--color-on-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-lg);
+}
+
+.global-nav__logo {
+  font-family: var(--font-text);
+  font-size: var(--fs-nav-link);
+  font-weight: 600;
+  letter-spacing: -0.12px;
+}
+
+.global-nav__links {
+  display: flex;
+  gap: var(--space-lg);
+  list-style: none;
+}
+
+.global-nav__links a {
+  font-family: var(--font-text);
+  font-size: var(--fs-nav-link);
+  font-weight: 400;
+  letter-spacing: -0.12px;
+  opacity: 0.9;
+  transition: opacity 0.2s var(--ease-premium);
+}
+
+.global-nav__links a:hover {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Hero section — full viewport, product-centered
+   ========================================================================== */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: var(--color-canvas); /* swap to var(--color-surface-black) for dark hero */
+  overflow: hidden;
+}
+
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 var(--space-lg);
+  pointer-events: none; /* let mouse events reach the canvas for parallax */
+}
+
+.hero__content > * {
+  pointer-events: auto; /* re-enable on actual interactive/readable elements */
+}
+
+.hero__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-hero-display);
+  font-weight: 600;
+  line-height: 1.07;
+  letter-spacing: -0.28px;
+  color: var(--color-ink);
+  margin-bottom: var(--space-md);
+  opacity: 0; /* animated in via JS load sequence */
+}
+
+.hero__tagline {
+  font-family: var(--font-display);
+  font-size: var(--fs-tagline);
+  font-weight: 600;
+  line-height: 1.19;
+  letter-spacing: 0.231px;
+  color: var(--color-ink);
+  margin-bottom: var(--space-xl);
+  opacity: 0;
+}
+
+.hero__actions {
+  display: flex;
+  gap: var(--space-sm);
+  opacity: 0;
+}
+
+/* ==========================================================================
+   Buttons — {component.button-primary} / {component.button-secondary-pill}
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-text);
+  font-size: var(--fs-body);
+  font-weight: 400;
+  border-radius: var(--radius-pill);
+  padding: 11px 22px;
+  transition: transform 0.15s var(--ease-premium);
+}
+
+.btn:active {
+  transform: scale(0.95); /* system-wide micro-interaction per apple.md */
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.btn--primary:focus-visible {
+  outline: 2px solid var(--color-primary-focus);
+  outline-offset: 2px;
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+/* ==========================================================================
+   Responsive — breakpoints per apple.md
+   ========================================================================== */
+@media (max-width: 1068px) {
+  .hero__title {
+    font-size: var(--fs-display-lg); /* 40px */
+  }
+}
+
+@media (max-width: 833px) {
+  .global-nav__links {
+    display: none; /* collapses to hamburger in a future pass if needed */
+  }
+}
+
+@media (max-width: 640px) {
+  .hero__title {
+    font-size: 34px;
+  }
+  .hero__actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 419px) {
+  .hero__title {
+    font-size: 28px;
+  }
+}
