@@ -10,6 +10,13 @@ import { createProduct } from "./product.js";
  * scroll animation) without re-creating the scene.
  */
 export function initScene(canvas) {
+  // Detected once at init and used to scale renderer cost down on touch
+  // devices — antialiasing and shadow-map rendering are two of the more
+  // expensive per-frame costs on mobile GPUs, and antialias can only be
+  // set at construction time, so this has to happen before the renderer
+  // is created. See Issue #8 (fix/mobile-performance).
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
@@ -23,15 +30,16 @@ export function initScene(canvas) {
 
   const renderer = new THREE.WebGLRenderer({
     canvas,
-    antialias: true,
+    antialias: !isTouchDevice, // MSAA is expensive on mobile GPUs; skip it there
     alpha: true, // transparent background so the CSS hero background shows through
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const maxPixelRatio = isTouchDevice ? 1.5 : 2;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.1;
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = !isTouchDevice; // skip shadow-map pass entirely on touch
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   // Procedural "HDR" environment for realistic reflections without an external .hdr file
@@ -45,8 +53,11 @@ export function initScene(canvas) {
   // Cinematic three-point-style lighting
   const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
   keyLight.position.set(3, 5, 4);
-  keyLight.castShadow = true;
-  keyLight.shadow.mapSize.set(1024, 1024);
+  keyLight.castShadow = !isTouchDevice;
+  keyLight.shadow.mapSize.set(
+    isTouchDevice ? 512 : 1024,
+    isTouchDevice ? 512 : 1024
+  );
   keyLight.shadow.radius = 6;
   scene.add(keyLight);
 
@@ -59,6 +70,9 @@ export function initScene(canvas) {
 
   // Product
   const product = createProduct();
+  product.traverse((child) => {
+    if (child.isMesh) child.castShadow = !isTouchDevice;
+  });
   scene.add(product);
 
   // Soft shadow catcher beneath the product (invisible except for its shadow)
@@ -68,13 +82,21 @@ export function initScene(canvas) {
   );
   shadowPlane.rotation.x = -Math.PI / 2;
   shadowPlane.position.y = -1.4;
-  shadowPlane.receiveShadow = true;
+  shadowPlane.receiveShadow = !isTouchDevice;
   scene.add(shadowPlane);
 
+  // Debounced resize — recalculating the projection matrix and resizing
+  // the renderer on every single resize event is wasted work, especially
+  // during a drag-resize or a mobile orientation change that fires several
+  // events in quick succession.
+  let resizeTimeout;
   function handleResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }, 150);
   }
   window.addEventListener("resize", handleResize);
 
