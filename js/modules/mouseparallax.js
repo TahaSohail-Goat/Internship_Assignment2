@@ -23,6 +23,19 @@ const MAX_CAMERA_Y = 0.12;    // camera vertical drift
 const LERP_FACTOR = 0.06;     // smoothing — lower = smoother/slower
 
 export function createMouseParallax(targetEl, state) {
+  // Touch/coarse-pointer devices have no persistent hover cursor, so
+  // cursor-driven tilt has no meaning there — and listening for pointermove
+  // on a touch device only adds event-handling overhead for nothing.
+  // Return a no-op with the same interface so script.js doesn't need to
+  // branch on device type itself. See Issue #8 (fix/mobile-performance).
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+  if (isTouchDevice) {
+    return {
+      update() {},
+      dispose() {},
+    };
+  }
+
   // Normalized pointer position, -1..1 on both axes, (0,0) = center/rest
   let targetX = 0;
   let targetY = 0;
