@@ -10,10 +10,10 @@
 
 import * as THREE from "three";
 import { initScene } from "./modules/scene.js";
-import { createIdleAnimation } from "./modules/idleAnimation.js";
-import { playLoadAnimation } from "./modules/loadAnimation.js";
-import { createAnimationState, applyAnimationState } from "./modules/animationState.js";
-import { createMouseParallax } from "./modules/mouseParallax.js";
+import { createIdleAnimation } from "./modules/idleanimation.js";
+import { playLoadAnimation } from "./modules/loadanimation.js";
+import { createAnimationState, applyAnimationState } from "./modules/animationstate.js";
+import { createMouseParallax } from "./modules/mouseparallax.js";
 
 const canvas = document.getElementById("hero-canvas");
 const { scene, camera, renderer, product } = initScene(canvas);
