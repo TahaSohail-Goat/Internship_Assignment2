@@ -148,6 +148,15 @@ a {
   display: block;
 }
 
+/* Covers the scene during the load sequence, then fades out to reveal it */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: var(--color-canvas);
+  pointer-events: none;
+}
+
 .hero__content {
   position: relative;
   z-index: 10;
@@ -173,7 +182,8 @@ a {
   letter-spacing: -0.28px;
   color: var(--color-ink);
   margin-bottom: var(--space-md);
-  opacity: 0; /* animated in via JS load sequence */
+  opacity: 0; /* animated in by js/modules/loadAnimation.js */
+  transform: translateY(24px);
 }
 
 .hero__tagline {
@@ -185,12 +195,14 @@ a {
   color: var(--color-ink);
   margin-bottom: var(--space-xl);
   opacity: 0;
+  transform: translateY(18px);
 }
 
 .hero__actions {
   display: flex;
   gap: var(--space-sm);
   opacity: 0;
+  transform: translateY(12px);
 }
 
 /* ==========================================================================
