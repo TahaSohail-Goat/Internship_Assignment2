@@ -31,6 +31,5 @@ follows [Keep a Changelog](https://keepachangelog.com/).
   devices, render loop paused via the Page Visibility API when the tab is
   hidden (#8)
 
-## [0.1.0] — TBD
-
-Initial release for Codoc IT Ltd. Assignment 2 submission.
+### Deployed
+- Live on Vercel: https://nova-audio.vercel.app
