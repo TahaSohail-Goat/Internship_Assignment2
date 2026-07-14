@@ -5,7 +5,7 @@ fictional headphone product, **Nova One**. Built as Codoc IT Ltd. Intern
 Assignment 2 — a static, responsive page implemented with a proper
 Git/GitHub feature-branch workflow.
 
-**Live demo:** [add your Vercel URL here after deployment]
+**Live demo:** https://nova-audio.vercel.app
 **Repository:** https://github.com/TahaSohail-Goat/Internship_Assignment2
 
 ## Purpose
